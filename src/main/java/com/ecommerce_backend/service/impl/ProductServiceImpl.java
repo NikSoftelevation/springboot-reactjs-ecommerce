@@ -1,12 +1,15 @@
 package com.ecommerce_backend.service.impl;
 
+import com.ecommerce_backend.exception.ResourceNotFoundException;
 import com.ecommerce_backend.model.Product;
+import com.ecommerce_backend.payload.ProductDto;
 import com.ecommerce_backend.repository.ProductRepository;
 import com.ecommerce_backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -14,40 +17,92 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public ProductDto createProduct(ProductDto productDto) {
+
+        /*ProductDto to Product*/
+        Product entity = toEntity(productDto);
+
+        Product save = productRepository.save(entity);
+
+        /*Product to productDto*/
+        ProductDto dto = toDto(save);
+        return dto;
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+
+        /*ProductDto to Product*/
+        List<Product> findAll = productRepository.findAll();
+
+        List<ProductDto> findAllDto = findAll.stream().map(product -> toDto(product)).collect(Collectors.toList());
+
+        return findAllDto;
     }
 
     @Override
-    public Product getProductById(int productId) {
-        return productRepository.findById(productId).get();
+    public ProductDto getProductById(int productId) {
+
+        Product findById = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException(" No Product found with productId :" + productId));
+
+        ProductDto dto = toDto(findById);
+
+        return dto;
     }
 
     @Override
-    public Product updateProductByProductId(Product product, int productId) {
-        Product productById = productRepository.findById(productId).get();
+    public ProductDto updateProductByProductId(ProductDto productDto, int productId) {
+        Product productById = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("No Product found with productId :" + productId));
 
-        productById.setProduct_desc(product.getProduct_desc());
-        productById.setProduct_name(product.getProduct_name());
-        productById.setProduct_price(product.getProduct_price());
-        productById.setProduct_quantity(product.getProduct_quantity());
-        productById.setProduct_imageName(product.getProduct_imageName());
-        productById.setStock(product.isStock());
-        productById.setLive(product.isLive());
+        productById.setProduct_desc(productDto.getProduct_desc());
+        productById.setProduct_name(productDto.getProduct_name());
+        productById.setProduct_price(productDto.getProduct_price());
+        productById.setProduct_quantity(productDto.getProduct_quantity());
+        productById.setProduct_imageName(productDto.getProduct_imageName());
+        productById.setStock(productDto.isStock());
+        productById.setLive(productDto.isLive());
 
         Product updatedProduct = productRepository.save(productById);
-        return updatedProduct;
+
+        ProductDto dto = toDto(updatedProduct);
+        return dto;
     }
 
     @Override
     public void deleteProductByProductId(int productId) {
 
-        Product productToDelete = productRepository.findById(productId).get();
+        Product productToDelete = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("No Product found with productId :" + productId));
         productRepository.delete(productToDelete);
+    }
+
+    public Product toEntity(ProductDto productDto) {
+
+        Product p = new Product();
+        p.setProduct_name(productDto.getProduct_name());
+        p.setProduct_id(productDto.getProduct_id());
+        p.setProduct_imageName(productDto.getProduct_imageName());
+        p.setProduct_desc(productDto.getProduct_desc());
+        p.setProduct_quantity(productDto.getProduct_quantity());
+        p.setProduct_price(productDto.getProduct_price());
+        p.setLive(productDto.isLive());
+        p.setStock(productDto.isStock());
+        return p;
+    }
+
+    /*Product to productDto*/
+    public ProductDto toDto(Product product) {
+
+        ProductDto productDto = new ProductDto();
+
+        productDto.setProduct_id(product.getProduct_id());
+        productDto.setProduct_imageName(product.getProduct_imageName());
+        productDto.setProduct_name(product.getProduct_name());
+        productDto.setProduct_desc(product.getProduct_desc());
+        productDto.setProduct_price(product.getProduct_price());
+        productDto.setProduct_quantity(product.getProduct_quantity());
+        productDto.setStock(product.isStock());
+        productDto.setLive(product.isLive());
+
+        return productDto;
     }
 }
