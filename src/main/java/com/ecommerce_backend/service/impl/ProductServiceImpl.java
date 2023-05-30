@@ -3,6 +3,7 @@ package com.ecommerce_backend.service.impl;
 import com.ecommerce_backend.exception.ResourceNotFoundException;
 import com.ecommerce_backend.model.Category;
 import com.ecommerce_backend.model.Product;
+import com.ecommerce_backend.payload.CategoryDto;
 import com.ecommerce_backend.payload.ProductDto;
 import com.ecommerce_backend.repository.CategoryRepository;
 import com.ecommerce_backend.repository.ProductRepository;
@@ -111,6 +112,13 @@ public class ProductServiceImpl implements ProductService {
         productDto.setStock(product.isStock());
         productDto.setLive(product.isLive());
 
+        /*Change Category to CategoryDto*/
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setCategoryId(product.getCategory().getCategoryId());
+        categoryDto.setTitle(product.getCategory().getTitle());
+
+        /*Then set CategoryDto in ProductDto*/
+        productDto.setCategory(categoryDto);
         return productDto;
     }
 }

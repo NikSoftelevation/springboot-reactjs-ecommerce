@@ -1,5 +1,6 @@
 package com.ecommerce_backend.payload;
 
+import com.ecommerce_backend.model.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,5 @@ public class ProductDto {
     private boolean isLive;
     private String product_imageName;
     private String product_desc;
+    private Category category;
 }
