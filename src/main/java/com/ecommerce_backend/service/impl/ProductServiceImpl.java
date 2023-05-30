@@ -113,6 +113,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDto> findProductByCategory(int categoryId) {
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("No Category found with categoryId : " + categoryId));
+        List<Product> findProductByCategory = productRepository.findByCategory(category);
+        List<ProductDto> allDtos = findProductByCategory.stream().map((product -> this.modelMapper.map(product, ProductDto.class))).collect(Collectors.toList());
+        return allDtos;
+    }
+
+    @Override
     public void deleteProductByProductId(int productId) {
 
         Product productToDelete = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("No Product found with productId :" + productId));
