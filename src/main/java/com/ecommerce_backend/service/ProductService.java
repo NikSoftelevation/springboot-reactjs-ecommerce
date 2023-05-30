@@ -6,7 +6,7 @@ import com.ecommerce_backend.payload.ProductDto;
 import java.util.List;
 
 public interface ProductService {
-    public ProductDto createProduct(ProductDto productDto);
+    public ProductDto createProduct(ProductDto productDto, int categoryId);
 
     public List<ProductDto> getAllProducts();
 

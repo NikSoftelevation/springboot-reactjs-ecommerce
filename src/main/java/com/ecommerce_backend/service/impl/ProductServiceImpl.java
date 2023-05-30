@@ -1,8 +1,10 @@
 package com.ecommerce_backend.service.impl;
 
 import com.ecommerce_backend.exception.ResourceNotFoundException;
+import com.ecommerce_backend.model.Category;
 import com.ecommerce_backend.model.Product;
 import com.ecommerce_backend.payload.ProductDto;
+import com.ecommerce_backend.repository.CategoryRepository;
 import com.ecommerce_backend.repository.ProductRepository;
 import com.ecommerce_backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,20 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Override
-    public ProductDto createProduct(ProductDto productDto) {
+    public ProductDto createProduct(ProductDto productDto, int categoryId) {
+
+        /*Fetch that category exists or not*/
+        Category findById = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("No Category found with categoryId : " + categoryId));
 
         /*ProductDto to Product*/
-        Product entity = toEntity(productDto);
+        Product product = toEntity(productDto);
+        product.setCategory(findById);
 
-        Product save = productRepository.save(entity);
+        Product save = productRepository.save(product);
 
         /*Product to productDto*/
         ProductDto dto = toDto(save);
