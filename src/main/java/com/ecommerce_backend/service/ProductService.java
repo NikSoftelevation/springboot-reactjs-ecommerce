@@ -2,13 +2,14 @@ package com.ecommerce_backend.service;
 
 import com.ecommerce_backend.model.Product;
 import com.ecommerce_backend.payload.ProductDto;
+import com.ecommerce_backend.payload.ProductResponse;
 
 import java.util.List;
 
 public interface ProductService {
     public ProductDto createProduct(ProductDto productDto, int categoryId);
 
-    public List<ProductDto> getAllProducts();
+    public ProductResponse getAllProducts(int pageNumber, int pageSize, String sortBy, String sortDir);
 
     public ProductDto getProductById(int productId);
 

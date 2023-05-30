@@ -1,7 +1,9 @@
 package com.ecommerce_backend.controller;
 
 import com.ecommerce_backend.model.Product;
+import com.ecommerce_backend.payload.AppConstants;
 import com.ecommerce_backend.payload.ProductDto;
+import com.ecommerce_backend.payload.ProductResponse;
 import com.ecommerce_backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,9 +25,15 @@ public class ProductController {
         return new ResponseEntity<>(createProduct, HttpStatus.CREATED);
     }
 
+    /*Implementing pagination in getAllProducts API*/
     @GetMapping("/products")
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+    public ProductResponse getAllProducts(
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE_STRING, required = false) int pageSize,
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER_STRING, required = false) int pageNumber,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_STRING, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR_STRING, required = false) String sortDir) {
+        ProductResponse productResponse = productService.getAllProducts(pageNumber, pageSize, sortBy, sortDir);
+        return productResponse;
     }
 
     @GetMapping("/{productId}")

@@ -5,10 +5,16 @@ import com.ecommerce_backend.model.Category;
 import com.ecommerce_backend.model.Product;
 import com.ecommerce_backend.payload.CategoryDto;
 import com.ecommerce_backend.payload.ProductDto;
+import com.ecommerce_backend.payload.ProductResponse;
 import com.ecommerce_backend.repository.CategoryRepository;
 import com.ecommerce_backend.repository.ProductRepository;
 import com.ecommerce_backend.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +26,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public ProductDto createProduct(ProductDto productDto, int categoryId) {
@@ -39,14 +47,41 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getAllProducts() {
+    public ProductResponse getAllProducts(int pageNumber, int pageSize, String sortBy, String sortDir) {
 
-        /*ProductDto to Product*/
+        Sort sort = null;
+        if (sortDir.trim().toLowerCase().equals("asc")) {
+
+            sort = sort.by(sortBy).ascending();
+
+
+        } else {
+
+            sort = Sort.by(sortBy).descending();
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        Page<Product> page = productRepository.findAll(pageable);
+
+        List<Product> pageProduct = page.getContent();
+
+
+        List<ProductDto> productDtos = pageProduct.stream().map((product) -> modelMapper.map(product, ProductDto.class)).collect(Collectors.toList());
+
+        /*  *//*ProductDto to Product*//*
         List<Product> findAll = productRepository.findAll();
 
         List<ProductDto> findAllDto = findAll.stream().map(product -> toDto(product)).collect(Collectors.toList());
+*/
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setContent(productDtos);
+        productResponse.setPageNumber(page.getNumber());
+        productResponse.setPageSize(page.getSize());
+        productResponse.setTotalPages(page.getTotalPages());
+        productResponse.setLastPage(page.isLast());
 
-        return findAllDto;
+        return productResponse;
     }
 
     @Override
