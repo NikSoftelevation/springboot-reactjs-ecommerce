@@ -117,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
 
         Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("No Category found with categoryId : " + categoryId));
         List<Product> findProductByCategory = productRepository.findByCategory(category);
-        List<ProductDto> allDtos = findProductByCategory.stream().map((product -> this.modelMapper.map(product, ProductDto.class))).collect(Collectors.toList());
+        List<ProductDto> allDtos = findProductByCategory.stream().map((product -> modelMapper.map(product, ProductDto.class))).collect(Collectors.toList());
         return allDtos;
     }
 
@@ -162,7 +162,15 @@ public class ProductServiceImpl implements ProductService {
         categoryDto.setTitle(product.getCategory().getTitle());
 
         /*Then set CategoryDto in ProductDto*/
-        productDto.setCategory(categoryDto);
+        productDto.setCategory(toCategory(categoryDto));
         return productDto;
+    }
+
+    private Category toCategory(CategoryDto categoryDto) {
+        Category category = new Category();
+        category.setCategoryId(categoryDto.getCategoryId());
+        category.setTitle(categoryDto.getTitle());
+        category.setProduct(categoryDto.getProduct());
+        return category;
     }
 }
