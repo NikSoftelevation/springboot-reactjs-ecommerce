@@ -7,6 +7,7 @@ import com.ecommerce_backend.repository.UserRepository;
 import com.ecommerce_backend.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,15 +18,24 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
     private ModelMapper modelMapper;
 
     @Override
     public UserDto createUser(UserDto userDto) {
 
+        /*Converting UserDto->User using modelMapper*/
         User user = modelMapper.map(userDto, User.class);
+
+        /*Encoding password using BcryptPasswordEncoder and setting it back to user*/
+        String encodedPassword = bCryptPasswordEncoder.encode(user.getPassword());
+
+        user.setPassword(encodedPassword);
 
         User savedUser = userRepository.save(user);
 
+        /*Converting User->UserDto* using modelMapper*/
         UserDto mapUserDto = modelMapper.map(savedUser, UserDto.class);
 
         return mapUserDto;
@@ -60,8 +70,9 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserDto userDto, int userId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with userId  " + userId));
+
         user.setAbout(userDto.getAbout());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
         user.setActive(userDto.isActive());
         user.setAddress(userDto.getAddress());
         user.setGender(userDto.getGender());
