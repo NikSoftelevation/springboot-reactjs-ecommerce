@@ -46,6 +46,9 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Role> role = new HashSet<>();
 
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 

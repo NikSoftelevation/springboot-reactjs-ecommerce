@@ -6,20 +6,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
-
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public class Category {
+@AllArgsConstructor
+@NoArgsConstructor
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int categoryId;
-    private String title;
+    private int cartItemId;
+    private int quantity;
+    private double totalPrice;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<Product> product;
+    @ManyToOne
+    private Cart cart;
+
+    @OneToOne
+    private Product product;
 }

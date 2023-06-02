@@ -18,7 +18,7 @@ public class Product {
     private int product_id;
     private String product_name;
     private double product_price;
-    private boolean stock;
+    private boolean stock = true;
     private int product_quantity;
     private boolean isLive;
     private String product_imageName;
