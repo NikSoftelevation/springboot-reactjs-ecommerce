@@ -7,6 +7,7 @@ import com.ecommerce_backend.model.Product;
 import com.ecommerce_backend.model.User;
 import com.ecommerce_backend.payload.CartDto;
 import com.ecommerce_backend.payload.ItemRequest;
+import com.ecommerce_backend.repository.CartItemRepository;
 import com.ecommerce_backend.repository.CartRepository;
 import com.ecommerce_backend.repository.ProductRepository;
 import com.ecommerce_backend.repository.UserRepository;
@@ -29,6 +30,8 @@ public class CartServiceImpl implements CartService {
     private ModelMapper modelMapper;
     @Autowired
     private CartRepository cartRepository;
+    @Autowired
+    private CartItemRepository cartItemRepository;
 
     @Override
     public CartDto addItem(ItemRequest itemRequest, String username) {
@@ -44,7 +47,7 @@ public class CartServiceImpl implements CartService {
 
         if (!product.isStock()) {
 
-            new ResourceNotFoundException("Product is out of stock");
+            throw new ResourceNotFoundException("Product is out of stock");
         }
 
         CartItem cartItem = new CartItem();
@@ -97,5 +100,31 @@ public class CartServiceImpl implements CartService {
         Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("There is no cart"));
 
         return modelMapper.map(cart, CartDto.class);
+    }
+
+    @Override
+    public CartDto getCartByCartId(int cartId) {
+
+        // User user = userRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User not found "));
+
+        Cart findByCartId = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart not found with cartId " + cartId));
+
+        return modelMapper.map(findByCartId, CartDto.class);
+    }
+
+    @Override
+    public CartDto removeCartItemFromCart(String username, int productId) {
+
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User not found with username " + username));
+
+        Cart cart = user.getCart();
+        Set<CartItem> items = cart.getItems();
+
+        boolean removeIf = items.removeIf((i) -> i.getProduct().getProduct_id() == productId);
+        Cart save = cartRepository.save(cart);
+
+        System.out.println(removeIf);
+
+        return modelMapper.map(save, CartDto.class);
     }
 }

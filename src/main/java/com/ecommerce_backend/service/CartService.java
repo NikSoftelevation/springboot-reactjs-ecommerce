@@ -7,4 +7,8 @@ public interface CartService {
     public CartDto addItem(ItemRequest itemRequest, String username);
 
     public CartDto getAll(String email);
+
+    public CartDto getCartByCartId(int cartId);
+
+    public CartDto removeCartItemFromCart(String username, int productId);
 }

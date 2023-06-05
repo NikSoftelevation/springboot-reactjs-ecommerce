@@ -30,4 +30,15 @@ public class CartController {
         CartDto getAllCart = cartService.getAll(principal.getName());
         return new ResponseEntity<>(getAllCart, HttpStatus.OK);
     }
+
+    @GetMapping("/{cartId}")
+    public ResponseEntity<CartDto> getCartByCArtId(@PathVariable("cartId") int cartId) {
+        return new ResponseEntity<>(cartService.getCartByCartId(cartId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<CartDto> deleteCartItemFromCart(@PathVariable("productId") int productId, Principal principal) {
+        CartDto remove = cartService.removeCartItemFromCart(principal.getName(), productId);
+        return new ResponseEntity<>(remove, HttpStatus.UPGRADE_REQUIRED);
+    }
 }
