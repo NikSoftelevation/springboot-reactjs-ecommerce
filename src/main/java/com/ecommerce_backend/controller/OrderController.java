@@ -1,15 +1,13 @@
 package com.ecommerce_backend.controller;
 
+import com.ecommerce_backend.payload.ApiResponse;
 import com.ecommerce_backend.payload.OrderDto;
 import com.ecommerce_backend.payload.OrderRequest;
 import com.ecommerce_backend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -23,4 +21,17 @@ public class OrderController {
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest, Principal principal) {
         return new ResponseEntity<>(orderService.createOrder(orderRequest, principal.getName()), HttpStatus.CREATED);
     }
+
+    @DeleteMapping("delete/{orderId}")
+    public ResponseEntity<?> cancelOrderByOrderId(@PathVariable("orderId") int orderId) {
+        orderService.cancelOrder(orderId);
+        return new ResponseEntity<>(new ApiResponse("Order Deleted Successfully", true), HttpStatus.GONE);
+    }
+
+    @GetMapping("/{}")
+    public ResponseEntity<OrderDto> getOrderByOrderId(@PathVariable("orderId") int orderId) {
+        return new ResponseEntity<>(orderService.getOrderByOrderId(orderId), HttpStatus.OK);
+    }
+
+
 }

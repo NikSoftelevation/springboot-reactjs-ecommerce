@@ -85,4 +85,15 @@ public class OrderServiceImpl implements OrderService {
         }
         return modelMapper.map(save, OrderDto.class);
     }
+
+    @Override
+    public void cancelOrder(int orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("No Order found with orderId " + orderId));
+        orderRepository.delete(order);
+    }
+
+    public OrderDto getOrderByOrderId(int orderId) {
+        Order orderById = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("No Order found with orderId " + orderId));
+        return modelMapper.map(orderById,OrderDto.class);
+    }
 }

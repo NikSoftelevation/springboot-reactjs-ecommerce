@@ -5,4 +5,8 @@ import com.ecommerce_backend.payload.OrderRequest;
 
 public interface OrderService {
     public OrderDto createOrder(OrderRequest orderRequest, String username);
+
+    public void cancelOrder(int orderId);
+
+    public OrderDto getOrderByOrderId(int orderId);
 }
