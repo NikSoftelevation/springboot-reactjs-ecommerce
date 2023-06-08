@@ -24,7 +24,5 @@
 
 ![images](https://user-images.githubusercontent.com/122023966/212693764-003d3f57-f924-41af-a2b0-ca66f61bf45e.png)        
 
-https://github.com/NikSoftelevation/blog-app-api-s/blob/c9512d2f9578a05b0ccc25740bbcbbc5b6f3572c/README.md
-
 
 https://github.com/NikSoftelevation
